@@ -1,0 +1,4 @@
+.venv
+.marscode
+__pycache__
+*.pdf

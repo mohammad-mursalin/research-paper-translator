@@ -1,0 +1,25 @@
+.box {
+  --bgc: rgba(71, 255, 246, 0.979);
+  width: 10rem;
+  aspect-ratio: 1/1;
+  border: 1.5rem solid #0000;
+  background: linear-gradient(
+      120deg,
+      color-mix(in oklab, var(--bgc), #000000 10%) calc(50% - 1px),
+      var(--bgc) calc(50% + 1px)
+    );
+  background-clip:border-box;
+  position: relative;
+  isolation: isolate;
+}
+.box::before {
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+  border-radius: 2px;
+  background-color: #ffffff40;
+  backdrop-filter: blur(4px);
+  box-shadow: inset 1px 1px #ffffff40, inset -1px -1px #00000040,
+    10px 10px 10px #00000040;
+}

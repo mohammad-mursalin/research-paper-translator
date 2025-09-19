@@ -1,0 +1,151 @@
+.landingPage {
+  width: 90.4%;
+  display: flex;
+  margin-bottom: 200px;
+}
+.text {
+  width: 60%;
+  font-family: "Inter";
+  margin: 45px 39.2px;
+  padding: 45px;
+}
+
+.text h4 {
+  position: relative;
+  left: 5.5px;
+  letter-spacing: 14px;
+  font-weight: 400;
+  margin-bottom: 0px;
+  width: 450px;
+}
+.text h1 {
+  line-height: 125px;
+  font-size: 100px;
+  letter-spacing: 4px;
+  margin: 0px auto;
+}
+
+.text p {
+  font-size: 15px;
+  font-family: "PT Sans Narrow";
+  letter-spacing: 2px;
+  position: relative;
+  line-height: 18px;
+  left: 4.2px;
+  color: rgba(0, 0, 0, 0.75);
+  margin-top: 0px;
+  width: 85%;
+}
+.btn2 {
+  width: 100px;
+  height: 35px;
+  font-size: 13px;
+  font-weight: 570;
+  color: #ffffff;
+  background: linear-gradient(to top left, #9feee5fb, #48c2bcfb);
+  padding: 5px 10px;
+  border: 1px solid #32a7a1fb;
+  border-radius: 8px;
+  position: relative;
+  left: 4.2px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.right {
+  width: 40%;
+  display: flex;
+  position: relative;
+  top: 36px;
+}
+.pdflogo {
+  font-size: 230px;
+
+  background: linear-gradient(to bottom right, #b4e4f8d7, #0c93c9fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  margin: 40px 5px;
+  padding: 10px;
+}
+
+.rotatePencil {
+  font-size: 115px;
+  /* color: #ffffff; */
+  color: rgba(94, 92, 92, 0.986);
+  position: relative;
+  top: 18px;
+  left: 19px;
+  transform: rotate(-45deg);
+  display: inline-block;
+}
+/* side  */
+.side {
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter";
+  font-size: 13px;
+}
+.side1 {
+  width: 7vw;
+  height: 50vh;
+  background: /*radial-gradient(#b5e6defb,#48c2bcfb), */ linear-gradient(
+    to bottom right,
+    #dee7e6fb,
+    #48c2bcfb
+  );
+  z-index: 4;
+  position: absolute;
+  right: 0%;
+  top: 0%;
+  display: flex;
+  writing-mode: vertical-lr;
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+
+  color: #fff;
+}
+.side2 {
+  width: 7vw;
+  height: 50.05vh;
+  background: linear-gradient(to bottom right, #c6e1ecfa, #6999acfa);
+  z-index: 4;
+  position: absolute;
+  right: 0%;
+  top: 50%;
+
+  display: flex;
+  writing-mode: vertical-lr;
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+
+  color: #fff;
+}
+.side h4 {
+  position: relative;
+  left: 4.2px;
+  letter-spacing: 13px;
+  font-weight: 400;
+}
+.searchicon {
+  font-size: 1.7rem;
+  z-index: 7;
+  color: #fff;
+}
+
+.version {
+  position: absolute;
+  bottom: 1%;
+  right: 15%;
+  border: 0.5px solid #9cc0f0d0;
+  background: linear-gradient(to bottom right, #e7ebf0f3, #9cc0f0d0);
+  font-family: "Inter";
+  z-index: 5;
+  opacity: 0.8;
+  padding: 20px 20px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+}
