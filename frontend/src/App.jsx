@@ -21,6 +21,8 @@ export default function App() {
   const [extractedText, setExtractedText] = useState([]);
   const [extractedTextJoin, setExtractedTextJoin] = useState("");
   const [showExtraction, setShowExtraction] = useState(false);
+  const [translation, setTranslation] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // ScrollReveal animations
   useEffect(() => {
@@ -70,12 +72,17 @@ export default function App() {
 
     const form = new FormData();
     form.append("file", file);
-
-  const r = await axios.post(`${API_BASE}/pdf/ingest`, form);
-    setFileId(r.data.file_id);
-    setPageCount(r.data.page_count);
-    setExtractedText([]);
-    setExtractedTextJoin("");
+    setUploading(true);
+    try {
+      const r = await axios.post(`${API_BASE}/pdf/ingest`, form);
+      setFileId(r.data.file_id);
+      setPageCount(r.data.page_count);
+      setPage(1);
+      setExtractedText([]);
+      setExtractedTextJoin("");
+    } finally {
+      setUploading(false);
+    }
   };
 
   // Extract text for current page
@@ -88,9 +95,30 @@ export default function App() {
       });
       setExtractedText(r.data.text.columns);
       setExtractedTextJoin(r.data.text.joined_text);
+      setTranslation(null);
     } catch (err) {
       console.error("Text extraction failed:", err);
       alert("Extraction failed. Check console for details.");
+    }
+  };
+
+  // Translate extracted text
+  const translateText = async () => {
+    if (!fileId || !page) return;
+
+    try {
+      const r = await axios.post(`${API_BASE}/gemini/translate`, null, {
+        params: { file_id: fileId, page, columns },
+      });
+      setTranslation(
+        r.data.translated_text ||
+          r.data.translatedText ||
+          r.data.translated ||
+          r.data
+      );console.log(r.data.translated_text);
+    } catch (err) {
+      console.error("Translation failed:", err);
+      alert("Translation failed. Check console for details.");
     }
   };
 
@@ -143,6 +171,13 @@ export default function App() {
             <button onClick={() => extractText()} style={{ marginLeft: 8 }}>
               Extract Text
             </button>
+            <button
+              onClick={() => translateText()}
+              style={{ marginLeft: 8 }}
+              disabled={!extractedTextJoin}
+            >
+              Translate Text
+            </button>
 
             <section
               style={{ display: "flex", gap: "24px", marginTop: "16px" }}
@@ -156,6 +191,7 @@ export default function App() {
               <ExtractedText
                 extractedText={extractedText}
                 extractedTextJoin={extractedTextJoin}
+                translation={translation}
               />
             </section>
           </div>

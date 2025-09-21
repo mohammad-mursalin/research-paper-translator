@@ -1,22 +1,28 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
-from services.pdf_service import ingest_pdf_bytes, extract_pdf_by_page
+from services.pdf_service import PdfService
 
 router = APIRouter(
     prefix="/pdf",
     tags=["pdf"]
 )
 
+pdf_service = PdfService()
+
 
 @router.post("/ingest")
-async def ingest_pdf(file: UploadFile = File(...)):
+async def ingest(file: UploadFile = File(...)):
+    """
+    Accept multipart/form-data with key 'file' (PDF).
+    Returns { file_id, page_count }.
+    """
     content = await file.read()
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="empty_file")
 
     try:
-        file_id, page_count = ingest_pdf_bytes(content)
+        file_id, page_count = pdf_service.ingest_pdf_bytes(content)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"pdf_open_failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to ingest PDF: {e}")
 
     return {"file_id": file_id, "page_count": page_count}
 
@@ -24,8 +30,6 @@ async def ingest_pdf(file: UploadFile = File(...)):
 @router.get("/{file_id}/metadata")
 async def pdf_metadata(file_id: str):
     try:
-        # reuse extract_pdf_by_page to open PDF and get page count via PyMuPDF
-        # open file and read page count
         import fitz
         from os import path
         storage = __import__('os').getenv('STORAGE_DIR', './storage')
@@ -40,15 +44,22 @@ async def pdf_metadata(file_id: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{file_id}/extract")
-async def extract_pdf(file_id: str, page: int = Query(..., ge=1), columns: int = Query(1, ge=1)):
+@router.post("/{file_id}/extract")
+async def extract(
+    file_id: str,
+    page: int = Query(..., description="Page number (1-based)"),
+    columns: int = Query(1, description="Number of text columns")
+):
+    """
+    Extract text for file_id and page.
+    Query params: ?page=1&columns=1
+    Returns structured extraction (headers, titles, footers, columns, joined_text)
+    """
     try:
-        text = extract_pdf_by_page(file_id, page, columns)
+        extraction = pdf_service.extract_pdf_by_page(file_id=file_id, page=page, columns=columns)
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="not_found")
-    except ValueError:
-        raise HTTPException(status_code=400, detail="invalid_page")
+        raise HTTPException(status_code=404, detail="PDF not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"extract_failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Extraction failed: {e}")
 
-    return {"file_id": file_id, "page": page, "text": text}
+    return {"file_id": file_id, "page": page, "text": extraction}
