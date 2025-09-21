@@ -2,3 +2,8 @@
 .marscode
 __pycache__
 *.pdf
+.env
+.venv/
+__pycache__/
+*.pyc
+.env.local
