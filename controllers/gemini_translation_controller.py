@@ -56,6 +56,11 @@ async def translate(
         api_key=api_key
     )
 
-    translated_text = gemini_service.translate(original_text=original_text)
+    try:
+        translated_text = gemini_service.translate(original_text=original_text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {e}")
+
+    
     return Translation(original_text=original_text, translated_text=translated_text)
 
