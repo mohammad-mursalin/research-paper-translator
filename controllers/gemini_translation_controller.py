@@ -16,7 +16,6 @@ pdf_service = PdfService()
 
 # ✅ Initialize service with model name (api_key will be read inside service.translate)
 MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
-translator = GeminiTranslationService(model_name=MODEL_NAME)
 
 
 @router.post("/translate", response_model=Translation)
@@ -50,11 +49,13 @@ async def translate(
     if not api_key:
         raise HTTPException(status_code=401, detail="No Gemini API key configured. Set GEMINI_API_KEY or provide X-API-Key header.")
 
-    # translator.translate is sync; run in executor if needed
-    if asyncio.iscoroutinefunction(translator.translate):
-        translated_text = await translator.translate(original_text, api_key=api_key)
-    else:
-        loop = asyncio.get_event_loop()
-        translated_text = await loop.run_in_executor(None, lambda: translator.translate(original_text, api_key=api_key))
+    #testing gemini translation service
 
+    gemini_service = GeminiTranslationService(
+        model_name=MODEL_NAME,
+        api_key=api_key
+    )
+
+    translated_text = gemini_service.translate(original_text=original_text)
     return Translation(original_text=original_text, translated_text=translated_text)
+
