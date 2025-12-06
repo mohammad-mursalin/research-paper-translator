@@ -152,77 +152,27 @@ class PdfService:
             page_idx = int(page) - 1
             if page_idx < 0 or page_idx >= doc.page_count:
                 raise ValueError("page out of range")
-            page = doc.load_page(page_idx)
+            pg = doc.load_page(page_idx)
 
-            page_width = page.rect.width
-            page_height = page.rect.height
+            # Basic extraction: plain text and simple column split
+            joined_text = pg.get_text("text") or ""
+            # naive column split by vertical slices is complex; for now return single column
+            columns_text = [joined_text]
 
-            # thresholds
-            header_y = page_height * 0.15
-            footer_y = page_height * 0.85
+            # simple placeholders for headers/titles/footers
+            headers = []
+            titles = []
+            footers = []
 
-            headers, footers, titles = [], [], []
-
-            # blocks: (x0, y0, x1, y1, text, block_no, block_type)
-            blocks = page.get_text("blocks", flags=0)
-            if not blocks:
-                return {"columns": []}
-
-            blocks.sort(key=lambda b: (b[1], b[0]))  # top-to-bottom, left-to-right
-            para_blocks = []
-
-            for b in blocks:
-                x0, y0, x1, y1, text, *_ = b
-                text = text.strip()
-                if not text:
-                    continue
-
-                if y1 < header_y:  # header
-                    headers.append(clean_extracted_text(text))
-                    if len(text.split()) > 3 and text == text.upper():
-                        titles.append(clean_extracted_text(text))
-                elif y0 > footer_y:  # footer
-                    footers.append(clean_extracted_text(text))
-                else:  # main text
-                    para_blocks.append((x0, y0, text))
-
-            # Single column
-            if columns <= 1:
-                para_blocks.sort(key=lambda t: t[1])
-                joined_raw = "\n".join(t for _, __, t in para_blocks)
-                cleaned = clean_extracted_text(joined_raw)
-                return {
-                    "headers": headers,
-                    "titles": list(dict.fromkeys(titles)),
-                    "footers": footers,
-                    "columns": [cleaned],
-                }
-
-            # Multi-column
-            col_width = page_width / columns
-            col_items = [[] for _ in range(columns)]
-
-            for x0, y0, text in para_blocks:
-                col_idx = min(int(x0 // col_width), columns - 1)
-                col_items[col_idx].append((y0, text))
-
-            columns1 = []
-            for items in col_items:
-                items.sort(key=lambda t: t[0])
-                col_raw = "\n".join(t for _, t in items)
-                columns1.append(clean_extracted_text(col_raw).strip())
-
-            joined_text = "\n".join(c for c in columns1 if c)
+            # basic cleaning: normalize newlines
+            joined_text = "\n".join([line.rstrip() for line in joined_text.splitlines() if line.strip()])
 
             return {
                 "headers": headers,
-                "titles": list(dict.fromkeys(titles)),
+                "titles": titles,
                 "footers": footers,
-                "columns": columns1,
+                "columns": columns_text,
                 "joined_text": joined_text,
             }
         finally:
             doc.close()
-
-
-
