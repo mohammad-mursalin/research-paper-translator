@@ -15,7 +15,7 @@ router = APIRouter(
 pdf_service = PdfService()
 
 # ✅ Initialize service with model name (api_key will be read inside service.translate)
-MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
+MODEL_NAME = os.getenv("GEMINI_MODEL_NAME")
 
 
 @router.post("/translate", response_model=Translation)
