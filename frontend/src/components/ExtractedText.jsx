@@ -1,6 +1,22 @@
 import styles from "./ExtractedText.module.css";
+import { useEffect } from "react";
 
 export default function ExtractedText({ extractedText, extractedTextJoin, translation }) {
+
+  useEffect(() => {
+    if (!window.MathJax) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+      script.async = true;
+      script.onload = () => {
+        window.MathJax.typesetPromise();
+      };
+      document.head.appendChild(script);
+    } else {
+      window.MathJax.typesetPromise();
+    }
+  }, [translation]);
+
   if ((!extractedText || extractedText.length === 0) && !translation) return null;
 
   return (
@@ -35,8 +51,6 @@ export default function ExtractedText({ extractedText, extractedTextJoin, transl
           ))}
         </div>
       )}
-
-      
 
       {translation && (
         <div
