@@ -86,17 +86,17 @@ class GeminiTranslationService(TranslationService):
             model_provider="google_genai"
         )
 
-        self.structured_model = self.chat_model.with_structured_output(
-            Translation
-        )
+        # self.structured_model = self.chat_model.with_structured_output(
+        #     Translation
+        # )
 
-        self.chain = self.prompt_template | self.structured_model
+        # self.chain = self.prompt_template | self.structured_model
 
     def translate(self, original_text: str) -> Translation:
         """Translate text using Gemini API"""
 
-        translation = self.chain.invoke(
-            {"original_text": original_text}
+        translation = self.chat_model.invoke(
+            self.prompt_template.format(original_text=original_text)
         )
         print(translation)
-        return translation
+        return Translation(translated_text=translation.content)
