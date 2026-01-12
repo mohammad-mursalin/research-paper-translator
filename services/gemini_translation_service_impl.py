@@ -56,6 +56,11 @@ class GeminiTranslationService(TranslationService):
             - 1/2 pi r^2 → \frac{{1}}{{2}}\pi r^2
             - dx/d y → \frac{{dx}}{{dy}}
 
+            IMPORTANT (INFINITY HANDLING):
+            - If an inequality or bound is missing its upper limit but clearly implies infinity,
+              you MUST restore and include infinity using proper LaTeX notation: \infty.
+              Example: "0 ≤ f(x,y) <" → \[ 0 \le f(x,y) < \infty \]
+            - Never omit or drop infinity when it is mathematically implied.
 
             IMPORTANT:
             - You may modify ONLY equations.
