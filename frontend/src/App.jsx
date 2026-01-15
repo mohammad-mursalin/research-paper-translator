@@ -23,6 +23,7 @@ export default function App() {
   const [showExtraction, setShowExtraction] = useState(false);
   const [translation, setTranslation] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [translating, setTranslating] = useState(false);
 
   // ScrollReveal animations
   useEffect(() => {
@@ -106,6 +107,7 @@ export default function App() {
   const translateText = async () => {
     if (!fileId || !page) return;
 
+    setTranslating(true);
     try {
       const r = await axios.post(`${API_BASE}/gemini/translate`, null, {
         params: { file_id: fileId, page, columns },
@@ -119,6 +121,8 @@ export default function App() {
     } catch (err) {
       console.error("Translation failed:", err);
       alert("Translation failed. Check console for details.");
+    } finally {
+      setTranslating(false);
     }
   };
 
@@ -174,7 +178,7 @@ export default function App() {
             <button
               onClick={() => translateText()}
               style={{ marginLeft: 8 }}
-              disabled={!extractedTextJoin}
+              disabled={!extractedTextJoin || translating}
             >
               Translate Text
             </button>
@@ -192,6 +196,7 @@ export default function App() {
                 extractedText={extractedText}
                 extractedTextJoin={extractedTextJoin}
                 translation={translation}
+                translating={translating}
               />
             </section>
           </div>
